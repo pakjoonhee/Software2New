@@ -14,6 +14,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import static software.ii.project.DBConnection.conn;
@@ -42,16 +44,21 @@ public class AddCustomerDetailsController implements Initializable {
     }
     
     public void saveCustomerFunction(ActionEvent event) throws SQLException, IOException {
-        Statement statement = conn.createStatement();
-        String sqlStatement = ("INSERT INTO `customer_tbl`(CustomerName, Address, Email, Number) VALUE ('"+customerName.getText()+"','"+customerAddress.getText()+"','"+customerEmail.getText()+"','"+customerNumber.getText()+"')");
-        statement.executeUpdate(sqlStatement);
-        
-        Parent tableViewParent = FXMLLoader.load(getClass().getResource("/MainScreen/MainScreen.fxml"));
-        Scene tableViewScene = new Scene(tableViewParent);
+        if(customerName.getText().trim().length() == 0) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Please Enter a Customer Name", ButtonType.OK);
+            alert.showAndWait();
+        } else {
+            Statement statement = conn.createStatement();
+            String sqlStatement = ("INSERT INTO `customer_tbl`(CustomerName, Address, Email, Number) VALUE ('"+customerName.getText()+"','"+customerAddress.getText()+"','"+customerEmail.getText()+"','"+customerNumber.getText()+"')");
+            statement.executeUpdate(sqlStatement);
 
-        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+            Parent tableViewParent = FXMLLoader.load(getClass().getResource("/MainScreen/MainScreen.fxml"));
+            Scene tableViewScene = new Scene(tableViewParent);
 
-        window.setScene(tableViewScene);
-        window.show();
+            Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+
+            window.setScene(tableViewScene);
+            window.show();
+        }
     }
 }

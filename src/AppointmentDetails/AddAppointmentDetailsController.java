@@ -2,6 +2,8 @@ package AppointmentDetails;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
@@ -18,6 +20,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -115,18 +119,31 @@ public class AddAppointmentDetailsController implements Initializable {
     }
 
     public void saveFunction(ActionEvent event) throws SQLException, IOException {
+       
         String date = selectedMonth + "-" + selectedDay + "-" + selectedYear;
-        Statement statement = conn.createStatement();
-        String sqlStatement = ("INSERT INTO `appointments_tbl`(CustomerID, AppointmentDate, AppointmentTime, AppointmentType, CustomerName) VALUE ('"+customerID+"','"+date+"','"+selectedTime+"','"+selectedType+"','"+selectedConsultant+"')");
-        statement.executeUpdate(sqlStatement);
+        PreparedStatement ps = conn.prepareStatement(
+              "SELECT * FROM appointments_tbl WHERE AppointmentDate = ? AND AppointmentTime = ? AND CustomerName = ?");
         
-        Parent tableViewParent = FXMLLoader.load(getClass().getResource("/MainScreen/MainScreen.fxml"));
-        Scene tableViewScene = new Scene(tableViewParent);
+        ps.setString(1,date);
+        ps.setString(2,selectedTime);
+        ps.setString(3,selectedConsultant);
 
-        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
-
-        window.setScene(tableViewScene);
-        window.show();
+        ResultSet result = ps.executeQuery();
+        
+        if(result.next()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "This time for this consultant is already filled", ButtonType.OK);
+            alert.showAndWait();
+        } else {
+            Statement statement = conn.createStatement();
+            String sqlStatement = ("INSERT INTO `appointments_tbl`(CustomerID, AppointmentDate, AppointmentTime, AppointmentType, CustomerName) VALUE ('"+customerID+"','"+date+"','"+selectedTime+"','"+selectedType+"','"+selectedConsultant+"')");
+            statement.executeUpdate(sqlStatement);
+            Parent tableViewParent = FXMLLoader.load(getClass().getResource("/MainScreen/MainScreen.fxml"));
+            Scene tableViewScene = new Scene(tableViewParent);
+            Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+            window.setScene(tableViewScene);
+            window.show();
+        }
+        ps.close();
     }    
     
     public void changeScreenGoBack(ActionEvent event) throws IOException 

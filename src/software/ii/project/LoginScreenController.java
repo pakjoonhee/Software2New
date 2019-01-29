@@ -36,7 +36,6 @@ public class LoginScreenController implements Initializable {
     
     public void logInAction(ActionEvent event) throws IOException, SQLException, Exception, ClassNotFoundException 
     {
-        // if(DBConnection.makeConnection(url, userNameField.getText(), passwordField.getText())) {
         if(DBConnection.makeConnection(userNameField.getText(), passwordField.getText())) {
             Calendar myCalendar = Calendar.getInstance();
             String timeStamp = Integer.toString(myCalendar.get(Calendar.HOUR_OF_DAY)) + ":" + Integer.toString(myCalendar.get(Calendar.MINUTE));

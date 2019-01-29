@@ -83,6 +83,7 @@ public class MainScreenController implements Initializable {
     @FXML
     private TableColumn<Appointment, String> appointmentType;
     @FXML
+    
     private TableColumn<Appointment, String> consultantName;
     private Integer customerSelectedID;
     private Integer appointmentSelectedID;
