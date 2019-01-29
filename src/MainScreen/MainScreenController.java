@@ -7,6 +7,8 @@ import AppointmentDetails.EditAppointmentDetailsController;
 import Models.Appointment;
 import Models.Customer;
 import Models.Days;
+import Models.GeneralInterface;
+import Models.MessageInterface;
 import Models.NumberAppTypes;
 import java.io.File;
 import java.io.FileReader;
@@ -322,6 +324,9 @@ public class MainScreenController implements Initializable {
 
     public void numTypeReport() {
         try {
+            //Lambda expression adding a number, I used this lambda to add numbers.
+            GeneralInterface sum = n -> n + 1;
+            
             Statement statement = conn.createStatement();
             String sqlStatement = "SELECT * FROM appointments_tbl";
             ResultSet result = statement.executeQuery(sqlStatement);
@@ -345,13 +350,13 @@ public class MainScreenController implements Initializable {
                     for (int i = 0; i < SQLresult.size(); i++) {
                         if (SQLresult.get(i).getMonth().equals(month)) {
                             if (appType.equals("Counseling")) {
-                                Integer count = SQLresult.get(i).getCounselingCount() + 1;
+                                Integer count = sum.calculateSum(SQLresult.get(i).getCounselingCount());
                                 SQLresult.get(i).setCounselingCount(count);
                             } else if (appType.equals("Tutoring")) {
-                                Integer count = SQLresult.get(i).getTutoringCount() + 1;
+                                Integer count = sum.calculateSum(SQLresult.get(i).getTutoringCount());
                                 SQLresult.get(i).setTutoringCount(count);
                             } else if (appType.equals("Mentoring")) {
-                                Integer count = SQLresult.get(i).getMentoringCount() + 1;
+                                Integer count = sum.calculateSum(SQLresult.get(i).getMentoringCount());
                                 SQLresult.get(i).setMentoringCount(count);
                             }
                         }
@@ -464,7 +469,11 @@ public class MainScreenController implements Initializable {
             window.setScene(tableViewScene);
             window.show();
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Click on a Customer in the customer table before adding an appointment", ButtonType.OK);
+            // Lambda expression that displays a string. Makes the code much cleaner.
+            String errorMessage = "Click on a Customer in the customer table before adding an appointment";    
+            MessageInterface message = s -> s;
+            
+            Alert alert = new Alert(Alert.AlertType.ERROR, message.getMessage(errorMessage), ButtonType.OK);
             alert.showAndWait();
         }
     }
